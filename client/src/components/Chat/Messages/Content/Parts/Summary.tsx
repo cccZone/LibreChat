@@ -52,7 +52,6 @@ const SummaryButton = memo(
     isExpanded,
     onClick,
     label,
-    meta,
     content,
     contentId,
     showCopyButton = true,
@@ -60,7 +59,6 @@ const SummaryButton = memo(
     isExpanded: boolean;
     onClick: (e: MouseEvent<HTMLButtonElement>) => void;
     label: string;
-    meta?: string;
     content?: string;
     contentId: string;
     showCopyButton?: boolean;
@@ -95,7 +93,6 @@ const SummaryButton = memo(
             />
           </span>
           <span>{label}</span>
-          {meta && <span className="ml-2 text-xs text-text-tertiary">{meta}</span>}
         </button>
         {content && showCopyButton && (
           <button
@@ -249,10 +246,10 @@ const Summary = memo(({ content, model, provider, tokenCount, summarizing }: Sum
       parts.push([provider, model].filter(Boolean).join('/'));
     }
     if (tokenCount != null && tokenCount > 0) {
-      parts.push(`${tokenCount} tokens`);
+      parts.push(`${tokenCount} ${localize('com_ui_tokens')}`);
     }
-    return parts.length > 0 ? `(${parts.join(' \u00b7 ')})` : undefined;
-  }, [model, provider, tokenCount]);
+    return parts.length > 0 ? parts.join(' \u00b7 ') : undefined;
+  }, [model, provider, tokenCount, localize]);
 
   const label = useMemo(
     () =>
@@ -281,7 +278,6 @@ const Summary = memo(({ content, model, provider, tokenCount, summarizing }: Sum
             isExpanded={isExpanded}
             onClick={handleClick}
             label={label}
-            meta={meta}
             content={text}
             contentId={contentId}
             showCopyButton={!isActivelyStreaming}
@@ -299,6 +295,9 @@ const Summary = memo(({ content, model, provider, tokenCount, summarizing }: Sum
         >
           <div className="relative overflow-hidden">
             <SummaryContent>{text}</SummaryContent>
+            {meta && (
+              <span className="absolute bottom-2 left-4 text-xs text-text-secondary">{meta}</span>
+            )}
             <FloatingSummaryBar
               isVisible={isBarVisible && isExpanded}
               isExpanded={isExpanded}
